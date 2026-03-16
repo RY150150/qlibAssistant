@@ -54,7 +54,11 @@ class DataCLI:
         logger.info(f"使用代理 [{proxy}] 下载数据包...")
 
         run_command(wget_cmd)
-        run_command("tar -zxvf ~/tmp/qlib_bin.tar.gz -C ~/.qlib/qlib_data/cn_data --strip-components=1")
+
+        # 确保目标目录存在，再解压
+        target_dir = Path("~/.qlib/qlib_data/cn_data").expanduser()
+        target_dir.mkdir(parents=True, exist_ok=True)
+        run_command(f"tar -zxvf ~/tmp/qlib_bin.tar.gz -C {target_dir} --strip-components=1")
         logger.info("数据更新完成。")
         self.status()
 

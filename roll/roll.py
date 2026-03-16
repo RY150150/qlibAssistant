@@ -35,12 +35,35 @@ class RollingTrader:
 
         self.show_config()
         # 5. 子命令装载
+        # data 立即可用；train / model 做延迟初始化，避免在只用 data 时提前初始化 qlib
         self.data = DataCLI(**self.params)
-        self.train = TrainCLI(**self.params)
-        self.model = ModelCLI(**self.params)
+        self._train = None
+        self._model = None
 
         # 6. 环境修复
         fix_mlflow_paths(self.params.get("mlruns_dir"))
+
+    @property
+    def train(self) -> TrainCLI:
+        """
+        延迟初始化 TrainCLI：
+        只有在首次访问 self.train 时才创建实例，
+        从而推迟 qlib.init 的执行时间。
+        """
+        if self._train is None:
+            self._train = TrainCLI(**self.params)
+        return self._train
+
+    @property
+    def model(self) -> ModelCLI:
+        """
+        延迟初始化 ModelCLI：
+        只有在首次访问 self.model 时才创建实例，
+        避免纯 data 场景下提前初始化 qlib。
+        """
+        if self._model is None:
+            self._model = ModelCLI(**self.params)
+        return self._model
 
     def _load_and_merge_config(self, cli_args: Dict[str, Any]):
         """加载文件配置并与命令行参数合并，CLI 优先级最高"""

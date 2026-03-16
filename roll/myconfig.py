@@ -77,7 +77,7 @@ LINEAR_MODEL = {
     "module_path": "qlib.contrib.model.linear",
     "kwargs": {
         "estimator": "ridge",  # 岭回归
-        "alpha": "0.05"
+        "alpha": 0.05
     }
 }
 
