@@ -204,13 +204,12 @@ class ModelReviewHelper:
         for name, df in self.review_result_df_filter.items():
             df.to_csv(review_dir / f"{name}_filter_ret.csv", index=True)
 
-    # ---------- 对外入口 ----------
-    def review(self):
-        """马后炮"""
+    def _get_review_subdirs(self) -> list[Path] | None:
+        """获取复盘用的子目录列表，按日期倒序。目录不存在时返回 None。"""
         base_dir = Path("../qlib_score_csv")
         if not base_dir.exists() or not base_dir.is_dir():
             print(f"⚠️ 目录不存在: {base_dir.resolve()}")
-            return
+            return None
 
         subdirs = [d for d in base_dir.iterdir() if d.is_dir()]
         print(f"共发现 {len(subdirs)} 个子目录：")
@@ -221,7 +220,15 @@ class ModelReviewHelper:
                 return m.group(1)
             return ""
 
-        sorted_subdirs = sorted(subdirs, key=extract_date, reverse=True)
+        return sorted(subdirs, key=extract_date, reverse=True)
+
+    # ---------- 对外入口 ----------
+    def review(self):
+        """马后炮"""
+        sorted_subdirs = self._get_review_subdirs()
+        if sorted_subdirs is None:
+            return
+
         for subdir in sorted_subdirs:
             self._review_subdir(subdir)
 
