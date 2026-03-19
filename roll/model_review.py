@@ -245,3 +245,15 @@ class ModelReviewHelper:
         
 
         print(date_range_list)
+
+
+        for date in date_range_list:
+            df_ret = self.review_result_df[date]
+            # 获取df_ret的instrument排序前10名
+            top10_instruments = df_ret['instrument'].head(10).tolist()
+            # 计算 top10 instrument 的 avg_score 平均值
+            avg_real_label = df_ret[df_ret['instrument'].isin(top10_instruments)]['real_label'].mean()
+            # 创建表头为 date, top1, ..., top10, avg_real_label
+            columns = ['date'] + [f'top{i+1}' for i in range(10)] + ['avg_real_label']
+            df_top10 = pd.DataFrame([[date] + top10_instruments + [avg_real_label]], columns=columns)
+            print(df_top10)
