@@ -93,6 +93,10 @@ jobs:
             git checkout -b qlib_score
           fi
 
+          echo ">>> 清空 review_csv 与 backtest_csv 中的 csv（避免分支上残留旧文件）..."
+          mkdir -p review_csv backtest_csv
+          find review_csv backtest_csv -type f -iname '*.csv' -delete 2>/dev/null || true
+
           echo ">>> 更新 review_csv 和 backtest_csv 文件夹..."
           mkdir -p review_csv
           mkdir -p backtest_csv
