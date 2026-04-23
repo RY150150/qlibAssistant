@@ -193,6 +193,8 @@ class ModelReviewHelper:
         print(f"共发现 {len(subdirs)} 个子目录：")
 
         def extract_date(subdir: Path):
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", subdir.name):
+                return subdir.name.replace("-", "")
             m = re.match(r"selection_(\d{8})_", subdir.name)
             if m:
                 return m.group(1)

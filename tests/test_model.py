@@ -71,3 +71,15 @@ def test_filter_ret_df_logic(mock_cli_params):
     })
     filtered = cli.filter_ret_df(df)
     assert len(filtered) == 1
+
+
+def test_resolve_analysis_dir_relative_to_project_root():
+    cli = ModelCLI.__new__(ModelCLI)
+    cli.kwargs = {"analysis_folder": "output/"}
+    resolved = cli._resolve_analysis_dir()
+    assert resolved == root_dir / "output"
+
+
+def test_get_output_dir_name_uses_prediction_date():
+    df = pd.DataFrame({"datetime": pd.to_datetime(["2026-04-22", "2026-04-22"])})
+    assert ModelCLI._get_output_dir_name(df) == "2026-04-22"

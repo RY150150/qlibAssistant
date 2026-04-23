@@ -73,6 +73,8 @@ cd ./roll && python ./roll.py model decompress_mlruns   # 解压最新模型
 cd ./roll && python ./roll.py model selection           # 生成预测
 ```
 
+预测结果默认保存在项目根目录的 `output/预测日期/` 下，例如 `output/2026-04-22/2026-04-22_filter_ret.csv`。
+
 或解压 [GitHub Releases](https://github.com/touhoufan2024/qlibAssistant/releases) 中的模型包到 `~/qlibAssistant/mlruns`。
 
 ---
@@ -144,6 +146,8 @@ cd ./roll && python roll.py model decompress_mlruns
 ```bash
 cd ./roll && python ./roll.py model selection
 ```
+
+生成结果默认写入项目根目录 `output/预测日期/`。
 
 ### 预测逻辑说明
 

@@ -1,5 +1,6 @@
 qlib_score_csv/
 review_csv/
+output/
 .vscode/
 **/__pycache__/
 roll/home

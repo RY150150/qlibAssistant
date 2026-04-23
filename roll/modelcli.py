@@ -271,13 +271,34 @@ class ModelCLI:
                 append_to_file(md_file, f"\n\tRecorder: {rid}\n")
                 append_to_file(md_file, f"\n\t\tModel: {info}\n")
 
+    def _resolve_analysis_dir(self) -> Path:
+        """解析输出目录：相对路径统一以项目根目录为基准。"""
+        analysis_folder = self.kwargs["analysis_folder"]
+        base_dir = Path(analysis_folder).expanduser()
+        if base_dir.is_absolute():
+            return base_dir
+        project_root = Path(__file__).resolve().parent.parent
+        return (project_root / base_dir).resolve()
+
+    @staticmethod
+    def _get_output_dir_name(df_final: pd.DataFrame) -> str:
+        """按预测日期生成子目录名；多日期场景退化为日期范围。"""
+        if "datetime" not in df_final.columns or df_final.empty:
+            return datetime.now().strftime("%Y-%m-%d")
+
+        dates = sorted(pd.to_datetime(df_final["datetime"]).dt.date.unique())
+        if len(dates) == 1:
+            return dates[0].isoformat()
+        return f"{dates[0].isoformat()}_{dates[-1].isoformat()}"
+
     def _save_results(self, df_final, func_name, latest_stock_list):
-        base_dir = Path(self.kwargs['analysis_folder']).expanduser()
-        save_dir = base_dir / f"{func_name}_{datetime.now().strftime('%Y%m%d_%H_%M_%S')}"
+        base_dir = self._resolve_analysis_dir()
+        save_dir = base_dir / self._get_output_dir_name(df_final)
         save_dir.mkdir(parents=True, exist_ok=True)
         md_file = save_dir / "total.md"
 
-        append_to_file(md_file, f"# params \n")
+        # 同一天重复生成时覆盖旧摘要，避免不断追加重复内容。
+        append_to_file(md_file, f"# params \n", mmode="w")
         append_to_file(md_file, f" {self.kwargs}\n\n")
         self._record_model_info(md_file)
 
